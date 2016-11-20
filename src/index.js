@@ -1,6 +1,7 @@
 'use strict';
 
 const express = require('express');
+const favicon = require('express-favicon');
 
 const app = express();
 
@@ -36,6 +37,9 @@ function getEvents() {
 		});
 	});
 }
+
+app.use(favicon(path.resolve(__dirname, '../static/favicon.ico')));
+app.use('/favicon.ico', express.static(path.resolve(__dirname, '../static/favicon.ico')));
 
 app.use('/static', express.static(path.resolve(__dirname, '../static')));
 
