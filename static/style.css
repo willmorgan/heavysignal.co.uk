@@ -13,11 +13,15 @@ a {
 	color: #fff;
 }
 
+h1, h2 {
+	margin-bottom: 1em;
+}
+
 .main {
 	font-size: 1em;
 	margin: 0 auto;
 	padding: 20px;
-	max-width: 800px;
+	max-width: 720px;
 }
 
 .page-title__small {
@@ -28,6 +32,11 @@ a {
 .section-title {
 	padding-bottom: .2em;
 	border-bottom: .2em solid rgba(255, 255, 255, .5);
+}
+
+.section-subtitle {
+	font-size: 1.4em;
+	margin-bottom: 0;
 }
 
 .section-inner {
@@ -74,8 +83,49 @@ a {
 
 .event__location {
 	display: block;
+	margin-top: 0;
+}
+
+.event__times {
+	font-size: 1.1em;
+	margin-top: 0;
+}
+
+.event__title {
+	margin-bottom: 0;
+}
+
+.event__venue {
+	font-size: 1.1em;
+	font-weight: 700;
+}
+
+.event__image {
+	display: block;
+	max-width: 100%;
 }
 
 .event__address {
 	display: block;
+}
+
+.button {
+	border: 1px solid rgba(255, 255, 255, .5);
+	border-radius: .25em;
+	text-transform: uppercase;
+	background: #13517b;
+	padding: .5em .75em;
+	text-decoration: none;
+	font-weight: 700;
+	display: inline-block;
+	position: relative;
+}
+
+.button:hover,
+.button:focus {
+	background: rgba(255, 255, 255, .5);
+}
+
+.button:active {
+	top: 1px;
 }

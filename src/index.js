@@ -10,6 +10,7 @@ const PORT = process.env.PORT || 3000;
 const FB = require('fb');
 
 const pug = require('pug');
+const moment = require('moment');
 
 const path = require('path');
 
@@ -18,9 +19,24 @@ const TEMPLATE = pug.compileFile(path.resolve(__dirname, './template.pug'));
 const { FB_APP_ID, FB_APP_SECRET, PAGE_ID } = process.env;
 
 function showEvents(events) {
-	return TEMPLATE({
-		events: events.slice(0,5)
-	});
+	return TEMPLATE(Object.assign({
+		events: events.slice(0,5),
+		startEnd: function startEnd(start, end) {
+			const startDay = start ? moment.utc(start).format('DDD') : 0;
+			const endDay = end ? moment.utc(end).format('DDD') : 0;
+			if (!startDay) {
+				return '';
+			}
+			const longFormat = 'dddd, MMMM Do YYYY HH:mm';
+			const timeFormat = 'HH:mm';
+			let string = moment.utc(start).format(longFormat);
+			if (endDay) {
+				let endFormat = (endDay - startDay === 1) ? timeFormat : longFormat;
+				string = string + ' - ' + moment.utc(end).format(endFormat);
+			}
+			return string;
+		}
+	}));
 }
 
 function processEvents(events) {
@@ -29,7 +45,17 @@ function processEvents(events) {
 
 function getEvents() {
 	return new Promise((resolve, reject) => {
-		FB.api(`/${PAGE_ID}/events`, function (response) {
+		FB.api(`/${PAGE_ID}/events`, {
+			fields: [
+				'id',
+				'cover',
+				'ticket_uri',
+				'name',
+				'start_time',
+				'end_time',
+				'place',
+			],
+		}, function (response) {
 			if (response.data) {
 				return resolve(response.data);
 			}
@@ -53,6 +79,7 @@ app.get('/', function(req, res, next) {
 });
 
 app.use(function (error, req, res, next) {
+	console.error(error);
 	res.status(500).json(Object.assign({ message: 'Error', error }));
 });
 
