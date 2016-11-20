@@ -8,10 +8,18 @@ const PORT = process.env.PORT || 3000;
 
 const FB = require('fb');
 
+const pug = require('pug');
+
+const path = require('path');
+
+const TEMPLATE = pug.compileFile(path.resolve(__dirname, './template.pug'));
+
 const { FB_APP_ID, FB_APP_SECRET, PAGE_ID } = process.env;
 
 function showEvents(events) {
-	return events.slice(0,5);
+	return TEMPLATE({
+		events: events.slice(0,5)
+	});
 }
 
 function processEvents(events) {
@@ -29,9 +37,14 @@ function getEvents() {
 	});
 }
 
+app.use('/static', express.static(path.resolve(__dirname, '../static')));
+
 app.get('/', function(req, res, next) {
 	getEvents()
-		.then(events => res.json(showEvents(processEvents(events))))
+		.then(events => {
+			const html = showEvents(processEvents(events));
+			res.header('Content-Type', 'text/html').send(html);
+		})
 		.catch(error => next(error));
 });
 

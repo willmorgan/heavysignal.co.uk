@@ -1,0 +1,32 @@
+doctype html
+html(lang="en")
+	head
+		title Heavy Signal | Drum & Bass Promotions & Podcast | London, UK
+		link(rel="stylesheet", href="/static/style.css")
+body
+	div(class="main")
+		h1(class="page-title") Heavy Signal
+			span(class="page-title__small") Drum & Bass Promotions & Podcast
+		section
+			h1(class="section-title") Social Media
+			ul(class="social-list section-inner")
+				li
+					a(href="https://soundcloud.com/heavysignal") SoundCloud
+				li
+					a(href="https://facebook.com/HeavySignal") Facebook
+		section
+			h1(class="section-title") Contact Us
+			p(class="section-inner") Email us: 
+				a(href="mailto:events@heavysignal.co.uk") events@heavysignal.co.uk
+		section
+			h1(class="section-title") Latest Events
+			ul(class="event-list section-inner")
+				each event in events
+					li(class="event")
+						a(class="block-link event__link", href="https://facebook.com/events/" + event.id)
+							h1(class="event__title")= event.name
+							p(class="event__times") #{event.start_time} - #{event.end_time}
+							p(class="event__location")
+								span(class="event__venue")= event.place.name
+								if event.place.location
+									span(class="event__address") #{event.place.location.street} #{event.place.location.zip}
