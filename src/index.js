@@ -30,6 +30,7 @@ FB.api('/oauth/access_token', 'post', {
 		console.log('Listening on', PORT);
 	});
 });
+
 function showEvents(events) {
 	return events.slice(0,5);
 }
@@ -38,13 +39,21 @@ function processEvents(events) {
 	return events;
 }
 
-app.get('/', function(req, res, next) {
-	FB.api(`/${PAGE_ID}/events`, function (response) {
-		if (!response.error) {
-			return res.json(showEvents(processEvents(response.data)));
-		}
-		return next(response.error || 'Unknown error');
+function getEvents() {
+	return new Promise((resolve, reject) => {
+		FB.api(`/${PAGE_ID}/events`, function (response) {
+			if (response.data) {
+				return resolve(response.data);
+			}
+			return reject(response.error || new Error(Object.assign({ message: 'Unknown error', response })));
+		});
 	});
+}
+
+app.get('/', function(req, res, next) {
+	getEvents()
+		.then(events => res.json(showEvents(processEvents(events))))
+		.catch(error => next(error));
 });
 
 app.use(function (error, req, res, next) {
