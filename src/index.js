@@ -43,7 +43,16 @@ function processEvents(events) {
 	return events;
 }
 
-function getEvents() {
+const eventCache = {
+	lastFetched: null,
+	lifetime: 300,
+	events: [],
+};
+
+function getEvents(eventCache, now) {
+	if (eventCache.lastFetched && eventCache.lastFetched + eventCache.lifetime < now) {
+		return Promise.resolve(eventCache.events);
+	}
 	return new Promise((resolve, reject) => {
 		FB.api(`/${PAGE_ID}/events`, {
 			fields: [
@@ -57,6 +66,8 @@ function getEvents() {
 			],
 		}, function (response) {
 			if (response.data) {
+				eventCache.lastFetched = new Date().getTime();
+				eventCache.events = response.data;
 				return resolve(response.data);
 			}
 			return reject(response.error || new Error(Object.assign({ message: 'Unknown error', response })));
@@ -70,7 +81,7 @@ app.use('/favicon.ico', express.static(path.resolve(__dirname, '../static/favico
 app.use('/static', express.static(path.resolve(__dirname, '../static')));
 
 app.get('/', function(req, res, next) {
-	getEvents()
+	getEvents(eventCache, new Date().getTime())
 		.then(events => {
 			const html = showEvents(processEvents(events));
 			res.header('Content-Type', 'text/html').send(html);
