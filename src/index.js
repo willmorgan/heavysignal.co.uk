@@ -45,7 +45,7 @@ function processEvents(events) {
 
 const eventCache = {
 	lastFetched: null,
-	lifetime: 300,
+	lifetime: 3600,
 	events: [],
 };
 
@@ -95,6 +95,7 @@ app.use(function (error, req, res, next) {
 });
 
 console.log('Booting app with settings', 'FB_APP_ID', FB_APP_ID, 'PAGE_ID', PAGE_ID);
+
 FB.api('/oauth/access_token', 'post', {
 	client_id: FB_APP_ID,
 	client_secret: FB_APP_SECRET,
@@ -109,10 +110,18 @@ FB.api('/oauth/access_token', 'post', {
 		appSecret: FB_APP_SECRET,
 		accessToken: response.access_token,
 	});
-	app.listen(PORT, function (err) {
-		if (err) {
-			throw err;
-		}
-		console.log('Listening on port', PORT);
+	console.log('Warming cache');
+	return getEvents(eventCache, new Date().getTime()).then(events => {
+		console.log('Cache warm, loaded', events.length, 'events');
+	}).catch(error => {
+		console.error('Error warming cache, terminating boot');
+		throw error;
+	}).then(() => {
+		app.listen(PORT, function (err) {
+			if (err) {
+				throw err;
+			}
+			console.log('Listening on port', PORT);
+		});
 	});
 });
