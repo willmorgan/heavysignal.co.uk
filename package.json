@@ -15,7 +15,7 @@
   "dependencies": {
     "express": "^4.17.1",
     "express-favicon": "^2.0.0",
-    "moment": "^2.16.0",
+    "moment": "^2.19.3",
     "pug": "^2.0.0-beta6"
   }
 }
